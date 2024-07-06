@@ -3,3 +3,8 @@ struct vector2 {
     float y;
 };
 
+struct vector2Int {
+    int x;
+    int y;
+};
+

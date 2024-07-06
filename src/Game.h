@@ -10,6 +10,8 @@
 #include "Inventory.h"
 #include "Player.h"
 
+#include "Weapon.h"
+
 
 
 
@@ -29,6 +31,11 @@ class Game {
         std::vector<Entity*> entities;
 
         const Uint8* keyState;
+        Uint32 mouseState;
+        
+        vector2Int mousePos;
+
+
         Uint32 ticksCount;
         float deltaTime;
 

@@ -1,7 +1,8 @@
 class Player : public Entity {
     public:
         
-        int type = ENTITY_TYPE_PLAYER;
+        Player(){type = ENTITY_TYPE_PLAYER;}
+
 
         void move(float deltaTime) override {
             

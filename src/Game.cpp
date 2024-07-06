@@ -71,16 +71,23 @@ void Game::input() {
         }
     }
 
+    mouseState = SDL_GetMouseState(&mousePos.x, &mousePos.y);
+
+    std::cout << "Mouse pos x: " << mousePos.x << " y: " << mousePos.y << std::endl;
+
+    if (mouseState & SDL_BUTTON_LMASK) {
+        std::cout << "mouse 1 pressed" << std::endl;
+    }
+
+    if (mouseState & SDL_BUTTON_RMASK) {
+        std::cout << "mouse 2 pressed" << std::endl;
+    }
+
     if (keyState[SDL_SCANCODE_ESCAPE]) {
         running = false;
     }
 
-    if (keyState[SDL_SCANCODE_I]) {
-        
 
-        std::cout << player.inventory.slots.at(0).item.name << std::endl;
-        fflush(stdout);
-    }
 }
 
 void Game::render() {
@@ -110,6 +117,14 @@ void Game::update() {
     
     for (auto entity : entities) {
         
+        /* THIS IS HOW TO CAST
+        if (entity->type == ENTITY_TYPE_PLAYER) {
+            Player *localPlayer = static_cast<Player*>(entity);
+        }
+        */
+
+        
+
         entity->move(deltaTime);
 
     }
@@ -121,19 +136,19 @@ void Game::initPlayer() {
     player = Player();
 
     player.health = 10.0f;
-    
     player.size.x = 10;
     player.size.y = 10;
-    
     player.pos.x = 100;
     player.pos.y = 100;
-
     player.speed.x = 50;
     player.speed.y = 50;
 
     player.render = true;
-
     player.keyState = keyState;
+
+    player.inventory.maxSize = 10;
+    player.inventory.owner = &player;
+    player.inventory.selected = 0;
 
     //Test//
     Item item;
