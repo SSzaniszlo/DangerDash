@@ -6,11 +6,14 @@
 #include "Structs.h"
 
 #include "Entity.h"
+
 #include "Item.h"
 #include "Inventory.h"
-#include "Player.h"
 
+#include "Consumable.h"
 #include "Weapon.h"
+
+#include "Player.h"
 
 
 
@@ -26,8 +29,10 @@ class Game {
         void update();
 
         void initPlayer();
+        void initEntity(Entity *entity);
 
         Player player;
+
         std::vector<Entity*> entities;
 
         const Uint8* keyState;
@@ -35,9 +40,11 @@ class Game {
         
         vector2Int mousePos;
 
+        int mouseButtonDown = 0;
 
         Uint32 ticksCount;
         float deltaTime;
+
 
         bool running;
         SDL_Window *window;

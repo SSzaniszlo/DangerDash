@@ -41,8 +41,10 @@ bool Game::init() {
 void Game::start() {
     
     initPlayer();
+    
+    Entity entity;
+    initEntity(&entity);
 
-    entities.emplace_back(&player);
 
     running = true;
     
@@ -68,20 +70,25 @@ void Game::input() {
             case SDL_QUIT:
                 running = false;
                 break;
+            case SDL_MOUSEBUTTONDOWN:
+                mouseButtonDown = event.button.button;
+                break;
+            case SDL_KEYDOWN:
+                if (event.key.keysym.scancode == SDL_SCANCODE_KP_PLUS) {
+                    player.inventory.selected++;
+                } else if (event.key.keysym.scancode == SDL_SCANCODE_KP_MINUS) {
+                    player.inventory.selected--;
+                } else {
+                    break;
+                }
+
+                //std::cout << player.inventory.selected << " " << player.inventory.slots.at(player.inventory.selected).item.name << std::endl;
+                break;
         }
     }
 
     mouseState = SDL_GetMouseState(&mousePos.x, &mousePos.y);
 
-    std::cout << "Mouse pos x: " << mousePos.x << " y: " << mousePos.y << std::endl;
-
-    if (mouseState & SDL_BUTTON_LMASK) {
-        std::cout << "mouse 1 pressed" << std::endl;
-    }
-
-    if (mouseState & SDL_BUTTON_RMASK) {
-        std::cout << "mouse 2 pressed" << std::endl;
-    }
 
     if (keyState[SDL_SCANCODE_ESCAPE]) {
         running = false;
@@ -92,29 +99,69 @@ void Game::input() {
 
 void Game::render() {
     
-    SDL_SetRenderDrawColor(renderer, 0, 0, 128, 255);
+    SDL_SetRenderDrawColor(renderer, 66, 135, 245, 255);
     SDL_RenderClear(renderer);
 
-    if (player.render) {
+
+    //Will replace all this with textures
+    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+
+    for (auto entity : entities) {
         
+        if (!entity->render){continue;}
+
+
         SDL_Rect rect;   
         
-        rect.x = player.pos.x;
-        rect.y = player.pos.y;
+        rect.x = entity->pos.x;
+        rect.y = entity->pos.y;
 
-        rect.w = player.size.x;
-        rect.h = player.size.y;
+        rect.w = entity->size.x;
+        rect.h = entity->size.y;
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &rect);
-        
     }
+
+
 
     SDL_RenderPresent(renderer);
 }
 
 void Game::update() {
     
+    
+    if (mouseButtonDown > 0) {
+        switch (mouseButtonDown) {
+            case 1:
+                
+                Item *item = player.inventory.slots.at(player.inventory.selected).item;
+                std::cout << "Item type: " << item->type << std::endl;
+
+                /*
+                switch (item.type) {
+                    case ITEM_TYPE_CONSUMABLE: {
+                        Consumable *consumable = static_cast<Consumable*>(&item);
+                        consumable->use();
+                    } break;
+                    case ITEM_TYPE_WEAPON: {
+                        Weapon *weapon = static_cast<Weapon*>(&item);
+                        weapon->use();
+                    } break;
+                }*/
+
+                item->use();
+
+                std::cout << player.health << std::endl;
+                
+                
+                break;   
+        }
+
+        mouseButtonDown = 0;
+    }
+    
+
+
     for (auto entity : entities) {
         
         /* THIS IS HOW TO CAST
@@ -122,12 +169,12 @@ void Game::update() {
             Player *localPlayer = static_cast<Player*>(entity);
         }
         */
-
-        
-
+        entity->update();
         entity->move(deltaTime);
 
+
     }
+
 }
 
 
@@ -151,20 +198,60 @@ void Game::initPlayer() {
     player.inventory.selected = 0;
 
     //Test//
-    Item item;
+    Weapon *item = new Weapon(&entities);
     
-    item.name = "hello";
-    
-    item.stackCount = 2;
+    item->name = "Weapon";
+    item->stackCount = 1;
+    item->inventory = &player.inventory;
 
     Inventory::Slot slot;
-    slot.count = 2;
+    slot.count = 1;
     slot.item = item;
 
     player.inventory.slots.emplace_back(slot);
+
+    HealthPotion *item1 = new HealthPotion();
+    
+    item1->name = "health";
+    item1->stackCount = 1;
+    item1->inventory = &player.inventory;
+
+    item->damage = 10;
+    item->damageRadius = 50;
+
+    Inventory::Slot slot1;
+    slot1.count = 1;
+    slot1.item = item1;
+
+    player.inventory.slots.emplace_back(slot1);
+
     //Test//
+
+
+    entities.emplace_back(&player);
 }
 
+//Test function
+void Game::initEntity(Entity *entity) {
+    
+    entity->health = 10.0f;
+    
+    entity->pos.x = 500;
+    entity->pos.y = 500;
+    
+    entity->size.x = 100;
+    entity->size.y = 100;
+    
+    entity->speed.x = 50;
+    entity->speed.y = 50;
+
+    entity->render = true;
+
+
+
+    entities.emplace_back(entity);
+
+}
 
 
 

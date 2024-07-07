@@ -1,3 +1,5 @@
+class Item;
+
 class Inventory {
     
     
@@ -8,7 +10,7 @@ class Inventory {
 
         struct Slot {
             int count;
-            Item item;
+            Item *item;
         };
         
         Entity *owner;

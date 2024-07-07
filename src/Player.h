@@ -6,6 +6,7 @@ class Player : public Entity {
 
         void move(float deltaTime) override {
             
+
             if (keyState[SDL_SCANCODE_W]) {
                 this->pos.y -= deltaTime * this->speed.y;
             }
@@ -24,6 +25,7 @@ class Player : public Entity {
 
 
         };
+
 
 
         const Uint8* keyState;

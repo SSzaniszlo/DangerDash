@@ -14,9 +14,13 @@ class Entity {
         float health;
         bool render;
 
+        void update() {
+            if (health <= 0) {
+                render = false;
+            }
+        }
 
-        virtual void move(float deltaTime){};
+        virtual void move(float deltaTime) {};
 
-        virtual ~Entity(){};
 
 };
